@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -38,6 +39,7 @@ public abstract class Utilisateur {
     @Size(max=40)
     @Column(unique=true)
     @NotBlank(message = "L'email est obligatoire!")
+    @Email
     private String email;
     @Size(max=20)
     @NotBlank(message = "Le téléphone est obligatoire!")

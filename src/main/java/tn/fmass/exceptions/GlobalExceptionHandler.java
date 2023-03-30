@@ -12,68 +12,67 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import tn.fmass.models.ResponseEntityBuilder;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
+    List<String> details = new ArrayList<>();
     // handleResourceNotFoundException : triggers when there is no resource with the specified ID in BDD
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleNotFoundException(Exception ex) {
-
-
+    public ResponseEntity<List<String>> handleNotFoundException(Exception ex) {
+        details.clear();
+        details.add(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+                .body(details);
     }
 
     // handleMethodArgumentNotValid : triggers when @Valid fails
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseEntityBuilder> handleArgumentNotValidException(MethodArgumentNotValidException ex) {
-
-        List<String> details ;
+    public ResponseEntity<List<String>> handleArgumentNotValidException(MethodArgumentNotValidException ex) {
+        details.clear();
+       // List<String> details ;
         details = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getObjectName()+ " : " +error.getDefaultMessage())
+                .map(error -> error.getField()+ " : " +error.getDefaultMessage())
                 .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ResponseEntityBuilder.builder()
+                .body(details);
+                        /*ResponseEntityBuilder.builder()
                         .timestamp(LocalDateTime.now())
                         .message("Erreur dans la requête")
                         .status(HttpStatus.BAD_REQUEST)
-                        .errors(details).build());
+                        .errors(details).build());*/
     }
 
     // handleConstraintViolationException : triggers when @Validated fails
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException ex) {
-
+    public ResponseEntity<List<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        details.clear();
+        details.add(ex.getSQLException().getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ex.getSQLException().getMessage());
+                .body(details);
 
 
     }
 
     // handleHttpMessageNotReadable : triggers when the JSON is malformed
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleJsonMalFormattedException(HttpMessageNotReadableException ex) {
-
+    public ResponseEntity<List<String>> handleJsonMalFormattedException(HttpMessageNotReadableException ex) {
+        details.clear();
+        details.add(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage());
+                .body(details);
     }
     // handleHttpMediaTypeNotSupported : triggers when the JSON is invalid
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    protected ResponseEntity<List<String>> handleHttpMediaTypeNotSupported(
+    public ResponseEntity<List<String>> handleHttpMediaTypeNotSupported(
             HttpMediaTypeNotSupportedException ex) {
 
-        List<String> details = new ArrayList<>();
 
-
+        details.clear();
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getContentType());
         builder.append(" media type is not supported. Supported media types are ");
@@ -87,10 +86,9 @@ public class GlobalExceptionHandler {
     }
     // handleMissingServletRequestParameter : triggers when there are missing parameters
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    protected ResponseEntity<List<String>> handleMissingServletRequestParameter(
+    public ResponseEntity<List<String>> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex) {
-
-        List<String> details = new ArrayList<>();
+        details.clear();
         details.add(ex.getParameterName() + " parameter is missing");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -98,8 +96,8 @@ public class GlobalExceptionHandler {
     }
     // handleMethodArgumentTypeMismatch : triggers when a parameter's type does not match
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        List<String> details = new ArrayList<>();
+    public ResponseEntity<List<String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        details.clear();
         details.add(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -107,10 +105,9 @@ public class GlobalExceptionHandler {
     }
     // handleNoHandlerFoundException : triggers when the handler method is invalid
     @ExceptionHandler(NoHandlerFoundException.class)
-    protected ResponseEntity<Object> handleNoHandlerFoundException(
+    public ResponseEntity<List<String>> handleNoHandlerFoundException(
             NoHandlerFoundException ex) {
-
-        List<String> details = new ArrayList<>();
+        details.clear();
         details.add(String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
 
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)

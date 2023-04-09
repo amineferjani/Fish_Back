@@ -50,4 +50,9 @@ else
         userService.deleteUser(id);
         return ResponseEntity.ok(true);
     }
+    @PostMapping("users/auth")
+    public ResponseEntity<Boolean> auth(@RequestParam String email,
+                                        @RequestParam String password){
+        return ResponseEntity.ok(userService.auth(email,password));
+    }
 }

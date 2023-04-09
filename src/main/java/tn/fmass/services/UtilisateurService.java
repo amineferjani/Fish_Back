@@ -49,4 +49,14 @@ public class UtilisateurService {
     }
 
 
+    public Boolean auth(String email, String password) {
+        if(!repo.existsByEmail(email))
+            return false;
+        else{
+            Utilisateur usr=repo.findByEmail(email);
+            if(usr.getPassword().equals(password))
+                return true;
+            return false;
+        }
+    }
 }

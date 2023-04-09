@@ -12,4 +12,8 @@ public interface UtilisateurRepo extends JpaRepository<Utilisateur, Long> {
     List<Utilisateur> findAllSayed();
     @Query("SELECT u FROM Manager u ")
     List<Utilisateur> findAllManager();
+
+    Boolean existsByEmail(String email);
+
+    Utilisateur findByEmail(String email);
 }

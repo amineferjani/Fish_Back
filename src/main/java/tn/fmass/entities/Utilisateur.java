@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,13 +26,9 @@ import java.util.Date;
 public abstract class Utilisateur {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Size(min=5,max=25)
+    @Size(max=25)
     @NotBlank(message = "Le nom est obligatoire!")
     private String name;
-    @Size(max=20)
-    @NotBlank(message = "Le login est obligatoire!")
-    @Column(unique=true)
-    private String login;
     @Size(max=20)
     @NotBlank(message = "Le mot de passe est obligatoire!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
